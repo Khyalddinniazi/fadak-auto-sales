@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="405" viewBox="0 0 720 405" role="img" aria-labelledby="title desc">
+  <title id="title">Vehicle image</title>
+  <desc id="desc">Stylized vehicle silhouette placeholder</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5f7fc"/>
+      <stop offset="100%" stop-color="#dfe6f5"/>
+    </linearGradient>
+    <linearGradient id="car" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2f3f5c"/>
+      <stop offset="100%" stop-color="#1b2436"/>
+    </linearGradient>
+  </defs>
+  <rect width="720" height="405" rx="14" fill="url(#bg)"/>
+  <g transform="translate(90 125)" fill="url(#car)">
+    <path d="M420 142H78c-10 0-18-8-18-18v-8c0-14 11-26 25-28l56-9c8-1 16-5 22-11l28-28c9-9 21-14 34-14h108c13 0 25 5 34 14l28 28c6 6 14 10 22 11l56 9c14 2 25 14 25 28v8c0 10-8 18-18 18H420z"/>
+    <ellipse cx="124" cy="142" rx="38" ry="38" fill="#243149"/>
+    <ellipse cx="124" cy="142" rx="22" ry="22" fill="#eaeef7"/>
+    <ellipse cx="365" cy="142" rx="38" ry="38" fill="#243149"/>
+    <ellipse cx="365" cy="142" rx="22" ry="22" fill="#eaeef7"/>
+  </g>
+  <text x="360" y="320" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="18" fill="#60708c">Premium vehicle imagery</text>
+</svg>

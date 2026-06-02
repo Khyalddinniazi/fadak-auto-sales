@@ -1,0 +1,24 @@
+# Render Blueprint — lets Render configure the app automatically.
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: fadak-auto-sales
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2
+    envVars:
+      # Render generates a strong random secret for us.
+      - key: SECRET_KEY
+        generateValue: true
+      # Keep production mode on (debug off).
+      - key: FLASK_DEBUG
+        value: "0"
+      # Pin the Python version.
+      - key: PYTHON_VERSION
+        value: "3.12.7"
+      # Admin login — you fill these in the Render dashboard (kept out of code).
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false

@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | AutoCare{% endblock %}
+{% block content %}
+<section class="admin-header">
+  <h1>Admin Dashboard</h1>
+  <div class="hero-buttons">
+    <a class="btn btn-outline" href="{{ url_for('admin_vehicles') }}">Manage Vehicles</a>
+    <a class="btn btn-outline" href="{{ url_for('admin_logout') }}">Logout</a>
+  </div>
+</section>
+
+<section class="stat-grid">
+  <div class="stat-card">
+    <span class="stat-value">{{ stats.appointments_total }}</span>
+    <span class="stat-label">Total Appointments</span>
+  </div>
+  <div class="stat-card stat-warning">
+    <span class="stat-value">{{ stats.appointments_pending }}</span>
+    <span class="stat-label">Pending</span>
+  </div>
+  <div class="stat-card stat-info">
+    <span class="stat-value">{{ stats.appointments_confirmed }}</span>
+    <span class="stat-label">Confirmed</span>
+  </div>
+  <div class="stat-card stat-success">
+    <span class="stat-value">{{ stats.appointments_completed }}</span>
+    <span class="stat-label">Completed</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value">{{ stats.vehicles_available }}/{{ stats.vehicles_total }}</span>
+    <span class="stat-label">Vehicles Available</span>
+  </div>
+  <div class="stat-card">
+    <span class="stat-value">${{ '{:,.0f}'.format(stats.inventory_value) }}</span>
+    <span class="stat-label">Available Inventory Value</span>
+  </div>
+  <div class="stat-card {% if stats.inquiries_unread %}stat-warning{% endif %}">
+    <span class="stat-value">{{ stats.inquiries_unread }}</span>
+    <span class="stat-label">Unread Inquiries</span>
+  </div>
+</section>
+
+<section>
+  <h2>Appointments</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Contact</th>
+          <th>Vehicle</th>
+          <th>Service</th>
+          <th>Date/Time</th>
+          <th>Notes</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+          <tr>
+            <td>{{ appt['name'] }}</td>
+            <td>{{ appt['email'] }}<br>{{ appt['phone'] }}</td>
+            <td>{{ appt['vehicle_make'] }} {{ appt['vehicle_model'] }} {{ appt['vehicle_year'] or '' }}</td>
+            <td>{{ appt['service_type'] }}</td>
+            <td>{{ appt['appointment_date'] }}<br>{{ appt['appointment_time'] }}</td>
+            <td>{{ appt['notes'] or '-' }}</td>
+            <td>
+              <form method="POST" action="{{ url_for('update_appointment_status', appointment_id=appt['appointment_id']) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <select name="status" onchange="this.form.submit()">
+                  {% for status in ['Pending','Confirmed','Completed','Cancelled'] %}
+                    <option value="{{ status }}" {% if appt['status'] == status %}selected{% endif %}>{{ status }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+            </td>
+            <td>
+              <form class="inline-form" method="POST" action="{{ url_for('delete_appointment', appointment_id=appt['appointment_id']) }}" onsubmit="return confirm('Delete this appointment?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-danger btn-small" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="8">No appointments submitted yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Customer Inquiries</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Message</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inquiry in inquiries %}
+          <tr class="{% if not inquiry['is_read'] %}row-unread{% endif %}">
+            <td>{{ inquiry['name'] }}</td>
+            <td><a href="mailto:{{ inquiry['email'] }}">{{ inquiry['email'] }}</a></td>
+            <td>{{ inquiry['message'] }}</td>
+            <td>{% if inquiry['is_read'] %}Read{% else %}<strong>New</strong>{% endif %}</td>
+            <td>
+              {% if not inquiry['is_read'] %}
+              <form class="inline-form" method="POST" action="{{ url_for('mark_inquiry_read', inquiry_id=inquiry['inquiry_id']) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-small" type="submit">Mark Read</button>
+              </form>
+              {% endif %}
+              <form class="inline-form" method="POST" action="{{ url_for('delete_inquiry', inquiry_id=inquiry['inquiry_id']) }}" onsubmit="return confirm('Delete this inquiry?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-danger btn-small" type="submit">Delete</button>
+              </form>
+            </td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5">No inquiries yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Vehicles Overview</h2>
+  <p>Total vehicles: {{ stats.vehicles_total }} &middot; Available: {{ stats.vehicles_available }} &middot; Sold: {{ stats.vehicles_sold }}</p>
+  <a class="btn btn-primary" href="{{ url_for('admin_vehicles') }}">Open Vehicle Management</a>
+</section>
+{% endblock %}

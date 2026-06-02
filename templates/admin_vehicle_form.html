@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{% if vehicle %}Edit Vehicle{% else %}Add Vehicle{% endif %} | AutoCare{% endblock %}
+{% block content %}
+<section>
+  <h1>{% if vehicle %}Edit Vehicle{% else %}Add Vehicle{% endif %}</h1>
+  <form class="form-grid" method="POST" action="{{ form_action }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Year*
+      <input type="number" name="year" value="{{ vehicle['year'] if vehicle else '' }}" required>
+    </label>
+    <label>Make*
+      <input type="text" name="make" value="{{ vehicle['make'] if vehicle else '' }}" required>
+    </label>
+    <label>Model*
+      <input type="text" name="model" value="{{ vehicle['model'] if vehicle else '' }}" required>
+    </label>
+    <label>Mileage*
+      <input type="number" name="mileage" value="{{ vehicle['mileage'] if vehicle else '' }}" required>
+    </label>
+    <label>Price*
+      <input type="number" step="0.01" name="price" value="{{ vehicle['price'] if vehicle else '' }}" required>
+    </label>
+    <label>Condition*
+      <select name="condition" required>
+        {% for c in ['New','Used','Certified'] %}
+          <option value="{{ c }}" {% if vehicle and vehicle['condition'] == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>VIN
+      <input type="text" name="vin" value="{{ vehicle['vin'] if vehicle else '' }}">
+    </label>
+    <label>Status*
+      <select name="status" required>
+        {% for s in ['Available','Sold'] %}
+          <option value="{{ s }}" {% if vehicle and vehicle['status'] == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="full-width">Image URL
+      <input type="url" name="image_url" value="{{ vehicle['image_url'] if vehicle else '' }}" placeholder="https://...">
+    </label>
+    <label class="full-width">Description
+      <textarea name="description" rows="4">{{ vehicle['description'] if vehicle else '' }}</textarea>
+    </label>
+
+    <button class="btn btn-primary" type="submit">Save Vehicle</button>
+  </form>
+</section>
+{% endblock %}

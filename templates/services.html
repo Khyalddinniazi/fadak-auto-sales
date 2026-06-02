@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Services | {{ site.name }}{% endblock %}
+{% block content %}
+<section class="page-block">
+  <h1 class="section-title">Auto Service Menu</h1>
+  <p class="subtext section-sub">Reliable service from certified technicians with transparent pricing.</p>
+  <div class="card-grid card-grid-small card-grid-centered">
+    {% for service in services %}
+      <article class="card">
+        <div class="card-body">
+          <h3>{{ service['service_name'] }}</h3>
+          <p>{{ service['description'] }}</p>
+          <p class="price">Estimated ${{ '%.2f'|format(service['estimated_price']) }}</p>
+          <a class="btn btn-small" href="{{ url_for('appointment') }}">Book Service</a>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

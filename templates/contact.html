@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Contact | {{ site.name }}{% endblock %}
+{% block content %}
+<section class="page-block contact-grid">
+  <div>
+    <h1>Contact {{ site.name }}</h1>
+    <p><strong>Address:</strong> {{ site.address }}</p>
+    <p><strong>Sales Phone:</strong> <a href="tel:+12537775796">{{ site.phone }}</a></p>
+    <p><strong>Sales Email:</strong> <a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+    <p><strong>Hours:</strong> {{ site.hours }}</p>
+
+    <div class="map-placeholder">
+      <p>5110 131st Street Ct E</p>
+      <p>Tacoma, WA 98446</p>
+      <a class="btn btn-small" href="https://www.google.com/maps/search/?api=1&query=5110+131st+Street+Ct+E+Tacoma+WA+98446" target="_blank" rel="noopener">Open in Google Maps</a>
+    </div>
+  </div>
+
+  <form class="form-grid form-narrow" method="POST" action="{{ url_for('contact') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Name*
+      <input type="text" name="name" required>
+    </label>
+    <label>Email*
+      <input type="email" name="email" required>
+    </label>
+    <label class="full-width">Message*
+      <textarea name="message" rows="5" required></textarea>
+    </label>
+    <button class="btn btn-primary" type="submit">Send Message</button>
+  </form>
+</section>
+{% endblock %}

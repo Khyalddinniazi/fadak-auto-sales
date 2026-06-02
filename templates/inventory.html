@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Inventory | AutoCare Dealership{% endblock %}
+{% block content %}
+<section class="page-block">
+  <h1 class="section-title">Vehicle Inventory</h1>
+  <p class="subtext">Search and filter cars by make, year, condition, and price.</p>
+
+  <form class="filter-grid" method="GET" action="{{ url_for('inventory') }}">
+    <input type="text" name="search" placeholder="Search make or model" value="{{ filters['search'] }}">
+    <input type="number" name="min_price" placeholder="Min price" value="{{ filters['min_price'] }}">
+    <input type="number" name="max_price" placeholder="Max price" value="{{ filters['max_price'] }}">
+
+    <select name="year">
+      <option value="">All years</option>
+      {% for y in available_years %}
+        <option value="{{ y['year'] }}" {% if filters['year'] == y['year']|string %}selected{% endif %}>{{ y['year'] }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="condition">
+      <option value="">All conditions</option>
+      {% for c in conditions %}
+        <option value="{{ c['condition'] }}" {% if filters['condition'] == c['condition'] %}selected{% endif %}>{{ c['condition'] }}</option>
+      {% endfor %}
+    </select>
+
+    <button class="btn btn-primary" type="submit">Apply Filters</button>
+  </form>
+
+  <div class="card-grid card-grid-centered">
+    {% set fallback_img = url_for('static', filename='images/vehicle-fallback.svg') %}
+    {% if vehicles %}
+      {% for vehicle in vehicles %}
+        <article class="card vehicle-card">
+          <div class="card-media">
+            <img class="vehicle-img" src="{{ vehicle['image_url'] or fallback_img }}" alt="{{ vehicle['year'] }} {{ vehicle['make'] }} {{ vehicle['model'] }}" loading="lazy"
+                 onerror="this.onerror=null;this.src='{{ fallback_img }}';">
+          </div>
+          <div class="card-body">
+            <h3>{{ vehicle['year'] }} {{ vehicle['make'] }} {{ vehicle['model'] }}</h3>
+            <p>{{ vehicle['mileage'] }} miles</p>
+            <p class="price">${{ '%.2f'|format(vehicle['price']) }}</p>
+            <p>{{ vehicle['condition'] }} • <span class="status status-{{ vehicle['status']|lower }}">{{ vehicle['status'] }}</span></p>
+            <a class="btn btn-small" href="{{ url_for('vehicle_detail', vehicle_id=vehicle['vehicle_id']) }}">View Details</a>
+          </div>
+        </article>
+      {% endfor %}
+    {% else %}
+      <p>No vehicles matched your filters. Try broadening your search.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

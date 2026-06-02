@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Vehicle Details | AutoCare{% endblock %}
+{% block content %}
+{% set fallback_img = url_for('static', filename='images/vehicle-fallback.svg') %}
+<section class="page-block detail-grid">
+  <div class="detail-media">
+    <img class="detail-image vehicle-img" src="{{ vehicle['image_url'] or fallback_img }}" alt="{{ vehicle['year'] }} {{ vehicle['make'] }} {{ vehicle['model'] }}"
+         onerror="this.onerror=null;this.src='{{ fallback_img }}';">
+  </div>
+  <div class="detail-panel">
+    <h1>{{ vehicle['year'] }} {{ vehicle['make'] }} {{ vehicle['model'] }}</h1>
+    <p class="price">${{ '%.2f'|format(vehicle['price']) }}</p>
+    <p><strong>Mileage:</strong> {{ vehicle['mileage'] }} miles</p>
+    <p><strong>Condition:</strong> {{ vehicle['condition'] }}</p>
+    <p><strong>Status:</strong> <span class="status status-{{ vehicle['status']|lower }}">{{ vehicle['status'] }}</span></p>
+    <p><strong>VIN:</strong> {{ vehicle['vin'] or 'VIN placeholder' }}</p>
+    <p>{{ vehicle['description'] }}</p>
+
+    <div class="hero-buttons">
+      <a class="btn btn-primary" href="{{ url_for('contact') }}">Contact Dealership</a>
+      <a class="btn btn-outline" href="{{ url_for('appointment') }}">Schedule Test Drive</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

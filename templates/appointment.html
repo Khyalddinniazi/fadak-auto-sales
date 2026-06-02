@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Book Appointment | AutoCare{% endblock %}
+{% block content %}
+<section class="page-block">
+  <h1>Book a Service Appointment</h1>
+  <form class="form-grid" method="POST" action="{{ url_for('appointment') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Full Name*
+      <input type="text" name="full_name" required>
+    </label>
+    <label>Email*
+      <input type="email" name="email" required>
+    </label>
+    <label>Phone Number*
+      <input type="text" name="phone" required>
+    </label>
+    <label>Vehicle Make*
+      <input type="text" name="vehicle_make" required>
+    </label>
+    <label>Vehicle Model*
+      <input type="text" name="vehicle_model" required>
+    </label>
+    <label>Vehicle Year
+      <input type="number" name="vehicle_year" min="1900" max="2099">
+    </label>
+    <label>Service Type*
+      <select name="service_type" required>
+        <option value="">Select a service</option>
+        {% for service in service_names %}
+          <option value="{{ service['service_name'] }}">{{ service['service_name'] }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Preferred Date*
+      <input type="date" name="preferred_date" min="{{ min_date }}" required>
+    </label>
+    <label>Preferred Time*
+      <input type="time" name="preferred_time" required>
+    </label>
+    <label class="full-width">Additional Notes
+      <textarea name="notes" rows="4" placeholder="Tell us any specific concerns"></textarea>
+    </label>
+    <button class="btn btn-primary" type="submit">Submit Appointment</button>
+  </form>
+</section>
+{% endblock %}
