@@ -91,11 +91,21 @@ Full SQL in [`database/schema.sql`](database/schema.sql).
 
 ## 📷 Screenshots
 
-> _Add screenshots here to showcase the UI (home, services, booking, admin dashboard)._
+**Home page**
 
-| Home | Admin Dashboard |
-|------|-----------------|
-| _(screenshot)_ | _(screenshot)_ |
+![Home page](screenshots/home.png)
+
+**Services menu**
+
+![Services page](screenshots/services.png)
+
+**Appointment booking**
+
+![Booking form](screenshots/booking.png)
+
+**Admin dashboard**
+
+![Admin dashboard](screenshots/admin-dashboard.png)
 
 ---
 
