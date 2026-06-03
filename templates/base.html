@@ -16,7 +16,6 @@
       <button id="menuToggle" class="menu-toggle" type="button" aria-label="Open menu">Menu</button>
       <ul id="navLinks" class="nav-links">
         <li><a href="{{ url_for('index') }}">Home</a></li>
-        <li><a href="{{ url_for('inventory') }}">Inventory</a></li>
         <li><a href="{{ url_for('services') }}">Services</a></li>
         <li><a href="{{ url_for('appointment') }}">Book Service</a></li>
         <li><a href="{{ url_for('contact') }}">Contact</a></li>
@@ -45,8 +44,8 @@
         <p>{{ site.address }}</p>
       </div>
       <div class="footer-contact">
-        <p>Sales: <a href="tel:+12537775796">{{ site.phone }}</a></p>
-        <p>Sales: <a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+        <p>Phone: <a href="tel:+12537775796">{{ site.phone }}</a></p>
+        <p>Email: <a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
       </div>
     </div>
   </footer>

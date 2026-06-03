@@ -4,8 +4,8 @@
 <section class="hero hero-luxury">
   <div class="hero-overlay-text">{{ site.name.split()[0] }}</div>
 
-  <div class="hero-live-frame" aria-label="Live showroom preview">
-    <span class="live-badge"><span class="live-dot"></span> Live Showroom</span>
+  <div class="hero-live-frame" aria-label="Service bay preview">
+    <span class="live-badge"><span class="live-dot"></span> Now Serving Tacoma</span>
     <video class="hero-live-video" autoplay muted loop playsinline
            poster="https://images.unsplash.com/photo-1553440569-bcc63803a83d?auto=format&fit=crop&w=1200&h=675&q=80">
       <source src="https://videos.pexels.com/video-files/4486366/4486366-sd_960_540_30fps.mp4" type="video/mp4">
@@ -20,51 +20,20 @@
 
   <div class="hero-luxury-inner">
     <div class="hero-content hero-centered">
-      <h1 class="hero-title"><span class="hero-accent">Best Dealer</span> for Your Four Wheeler</h1>
+      <h1 class="hero-title"><span class="hero-accent">Expert Auto Care</span> You Can Trust</h1>
       <p class="hero-sub">{{ site.tagline }}</p>
 
-      <form class="hero-search-bar" action="{{ url_for('inventory') }}" method="GET">
-        <select name="condition" aria-label="Car type filter">
-          <option value="">All Types</option>
-          <option value="Used">Used</option>
-          <option value="Certified">Certified</option>
-          <option value="New">New</option>
-        </select>
-        <input type="text" name="search" placeholder="Search by make or model" aria-label="Search inventory">
-        <button class="btn btn-primary" type="submit">Search</button>
-      </form>
-
       <div class="hero-stats">
-        <span><strong>20+</strong> Vehicles In Stock</span>
-        <span><strong>15+</strong> Service Options</span>
+        <span><strong>Certified</strong> Technicians</span>
+        <span><strong>Fast</strong> Turnaround</span>
+        <span><strong>Fair</strong> Pricing</span>
       </div>
 
       <div class="hero-buttons">
-        <a class="btn btn-primary" href="{{ url_for('inventory') }}">Browse Inventory</a>
-        <a class="btn btn-outline" href="{{ url_for('appointment') }}">Book Service</a>
+        <a class="btn btn-primary" href="{{ url_for('appointment') }}">Book Service</a>
+        <a class="btn btn-outline" href="{{ url_for('services') }}">View Services</a>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="section-reveal page-block">
-  <h2 class="section-title">Featured Vehicles</h2>
-  <div class="card-grid card-grid-centered">
-    {% set fallback_img = url_for('static', filename='images/vehicle-fallback.svg') %}
-    {% for vehicle in featured_vehicles %}
-      <article class="card vehicle-card">
-        <div class="card-media">
-          <img class="vehicle-img" src="{{ vehicle['image_url'] or fallback_img }}" alt="{{ vehicle['year'] }} {{ vehicle['make'] }} {{ vehicle['model'] }}" loading="lazy"
-               onerror="this.onerror=null;this.src='{{ fallback_img }}';">
-        </div>
-        <div class="card-body">
-          <h3>{{ vehicle['year'] }} {{ vehicle['make'] }} {{ vehicle['model'] }}</h3>
-          <p class="price">${{ '%.2f'|format(vehicle['price']) }}</p>
-          <p class="card-meta">{{ vehicle['mileage'] }} miles • {{ vehicle['condition'] }} • <span class="status status-{{ vehicle['status']|lower }}">{{ vehicle['status'] }}</span></p>
-          <a class="btn btn-small" href="{{ url_for('vehicle_detail', vehicle_id=vehicle['vehicle_id']) }}">View Details</a>
-        </div>
-      </article>
-    {% endfor %}
   </div>
 </section>
 
@@ -82,15 +51,18 @@
       </article>
     {% endfor %}
   </div>
+  <div class="hero-buttons" style="justify-content:center;margin-top:1.5rem;">
+    <a class="btn btn-outline" href="{{ url_for('services') }}">See All Services</a>
+  </div>
 </section>
 
 <section class="why-us section-reveal page-block">
   <h2 class="section-title">Why Choose {{ site.name }}?</h2>
   <div class="badge-grid badge-grid-centered">
     <div class="badge">Certified Technicians</div>
-    <div class="badge">Financing Options</div>
+    <div class="badge">Honest, Upfront Quotes</div>
     <div class="badge">Same-Day Service</div>
-    <div class="badge">Trusted Tacoma Dealership</div>
+    <div class="badge">Trusted Tacoma Shop</div>
   </div>
 </section>
 {% endblock %}

@@ -4,7 +4,7 @@
 <section class="admin-header">
   <h1>Admin Dashboard</h1>
   <div class="hero-buttons">
-    <a class="btn btn-outline" href="{{ url_for('admin_vehicles') }}">Manage Vehicles</a>
+    <a class="btn btn-primary" href="{{ url_for('admin_services') }}">Manage Services</a>
     <a class="btn btn-outline" href="{{ url_for('admin_logout') }}">Logout</a>
   </div>
 </section>
@@ -27,12 +27,8 @@
     <span class="stat-label">Completed</span>
   </div>
   <div class="stat-card">
-    <span class="stat-value">{{ stats.vehicles_available }}/{{ stats.vehicles_total }}</span>
-    <span class="stat-label">Vehicles Available</span>
-  </div>
-  <div class="stat-card">
-    <span class="stat-value">${{ '{:,.0f}'.format(stats.inventory_value) }}</span>
-    <span class="stat-label">Available Inventory Value</span>
+    <span class="stat-value">{{ stats.services_total }}</span>
+    <span class="stat-label">Services Offered</span>
   </div>
   <div class="stat-card {% if stats.inquiries_unread %}stat-warning{% endif %}">
     <span class="stat-value">{{ stats.inquiries_unread }}</span>
@@ -132,8 +128,8 @@
 </section>
 
 <section>
-  <h2>Vehicles Overview</h2>
-  <p>Total vehicles: {{ stats.vehicles_total }} &middot; Available: {{ stats.vehicles_available }} &middot; Sold: {{ stats.vehicles_sold }}</p>
-  <a class="btn btn-primary" href="{{ url_for('admin_vehicles') }}">Open Vehicle Management</a>
+  <h2>Services</h2>
+  <p>You currently offer {{ stats.services_total }} service{{ '' if stats.services_total == 1 else 's' }}. Add new ones, edit descriptions, or update pricing anytime.</p>
+  <a class="btn btn-primary" href="{{ url_for('admin_services') }}">Manage Services</a>
 </section>
 {% endblock %}

@@ -1,21 +1,19 @@
-# AutoCare Dealership & Service Center
+# Fadak Auto Sales — Service Center
 
-A full-stack Flask web application for a small dealership and mechanic shop. Customers can browse cars, review services, book appointments, and contact the business. The admin can log in to manage appointments and vehicle inventory.
+A full-stack Flask web application for an auto service center. Customers can browse services, book service appointments, and contact the business. The admin can log in to manage services, appointments, and customer messages.
 
 ## Features
 
-- Clean, responsive dealership-style frontend (desktop + mobile)
-- Home page with featured vehicles, services, and trust badges
-- Inventory page with filters (search, price range, year, condition)
-- Vehicle detail page with pricing, mileage, VIN placeholder, and contact actions
-- Services page with estimated pricing and booking links
-- Appointment booking with validation and database storage
+- Clean, responsive frontend (desktop + mobile)
+- Home page with popular services and trust badges
+- Services page with pricing and a "Call for a quote" option
+- Appointment booking with validation and database storage (includes an "Other (Call for a quote)" choice)
 - Contact page with business details and contact form
 - Secure admin login (hashed password, env-configurable credentials)
-- Admin dashboard with live stats (appointments by status, inventory value, unread inquiries)
+- Admin dashboard with live stats (appointments by status, services offered, unread inquiries)
+- Admin service management (add, edit, delete, change prices)
 - Admin appointment management (update status, delete)
 - Customer inquiries captured from the contact form and managed in the dashboard
-- Admin vehicle management (add, edit, delete, mark Available/Sold)
 - CSRF protection on all forms, security headers, and custom error pages
 
 ## Technologies Used
@@ -36,11 +34,6 @@ A full-stack Flask web application for a small dealership and mechanic shop. Cus
 - `vehicle_make`, `vehicle_model`, `vehicle_year`
 - `service_type`, `appointment_date`, `appointment_time`
 - `notes`, `status`, `created_at`
-
-### `vehicles`
-- `vehicle_id` (PK)
-- `year`, `make`, `model`, `mileage`, `price`
-- `condition`, `vin`, `description`, `image_url`, `status`
 
 ### `services`
 - `service_id` (PK)

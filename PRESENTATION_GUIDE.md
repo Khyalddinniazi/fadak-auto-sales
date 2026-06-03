@@ -8,13 +8,15 @@ sections open during the demo.
 
 ## 1. What This Project Is (the 30-second pitch)
 
-**Fadak Auto Sales** is a full-stack web application for a car dealership and
-auto-service center. It has two sides:
+**Fadak Auto Sales** is a full-stack web application for an auto service center.
+It has two sides:
 
-- **The public website** — where customers browse cars for sale, view service
-  pricing, book a service appointment, and contact the business.
+- **The public website** — where customers view service pricing, book a service
+  appointment (including an "Other / Call for a quote" option), and contact the
+  business.
 - **The admin dashboard** — a private, password-protected area where the owner
-  manages vehicle inventory, appointments, and customer messages.
+  manages the service menu (add/edit/delete and change prices), appointments,
+  and customer messages.
 
 **Built with:** Python + Flask (backend), SQLite (database), and HTML / CSS /
 JavaScript (frontend).
@@ -30,7 +32,7 @@ plain words:
   as the language we use to give the computer instructions. It's popular because
   it's readable and powerful, and it handles all the "thinking" behind the
   scenes — like checking if a form was filled out correctly or pulling the right
-  cars from storage.
+  services from storage.
 
 - **Flask** is a *web framework* for Python — basically a toolkit that turns our
   Python code into a real website. Its main job is to listen for requests (like
@@ -47,9 +49,9 @@ plain words:
   there later when the owner opens the admin dashboard.
 
 - **Jinja2** (comes built into Flask) is the *templating engine*. It lets us
-  build HTML pages that can show live data — for example, the same inventory
-  template displays whatever cars are currently in the database, instead of us
-  writing each car by hand.
+  build HTML pages that can show live data — for example, the same services
+  template displays whatever services are currently in the database, instead of
+  us writing each one by hand.
 
 - **HTML, CSS, and JavaScript** are the frontend — the part the user actually
   sees and clicks. **HTML** is the structure (headings, buttons, forms),
@@ -102,19 +104,17 @@ fills in the HTML template, and sends the finished page back to your browser.
 ```
 AutoCare-Dealership-Service-Center/
 ├── app.py              # The brain: all pages, logic, security, database setup
-├── seed_data.py        # Starter data: 22 vehicles + 18 services with photos
+├── seed_data.py        # Starter data: the initial service menu
 ├── requirements.txt    # The Python packages the app needs
 ├── database/           # The SQLite database file lives here (auto-created)
 ├── templates/          # The HTML pages (what the user sees)
 │   ├── base.html              # Shared layout: navbar + footer
 │   ├── index.html             # Home page
-│   ├── inventory.html         # Car listings + filters
-│   ├── vehicle_detail.html    # Single car page
 │   ├── services.html          # Service menu
 │   ├── appointment.html       # Booking form
 │   ├── contact.html           # Contact page
 │   ├── error.html             # 404 / 500 error page
-│   └── admin_*.html           # Admin login, dashboard, vehicle management
+│   └── admin_*.html           # Admin login, dashboard, service management
 └── static/             # CSS, JavaScript, and images
     ├── css/style.css
     ├── js/script.js
@@ -247,49 +247,42 @@ Follow this order during the live demo. Suggested talking points are in
 *italics*.
 
 **1. Home page (`/`)**
-- *"This is the landing page. It has a live showroom video, featured vehicles
-  pulled from the database, popular services, and a quick search bar."*
-- Type a make like "Toyota" in the search bar and hit Search.
+- *"This is the landing page. It has a video banner, the most popular services
+  pulled live from the database, and trust badges."*
+- Click **View Services** or **Book Service** to move into the site.
 
-**2. Inventory page (`/inventory`)**
-- *"Here customers can browse all vehicles and filter by make, price range,
-  year, and condition. All of this data comes from the database."*
-- Demonstrate a filter — set a max price or pick a year, click Apply Filters.
+**2. Services page (`/services`)**
+- *"The shop offers a full menu of services, each with a description and price,
+  all loaded from the database. If a customer needs something not listed, there's
+  a 'Call for a quote' callout right here."*
 
-**3. Vehicle detail page**
-- Click **View Details** on any car.
-- *"Each car has its own page with price, mileage, condition, VIN, and a
-  description, plus buttons to contact the dealer or schedule a test drive."*
-
-**4. Services page (`/services`)**
-- *"The service center offers 18 services, each with a description and estimated
-  price, and a button to book it."*
-
-**5. Book an appointment (`/appointment`)**
+**3. Book an appointment (`/appointment`)**
 - Fill out the form and submit.
 - *"When a customer books, the details are validated and saved to the database.
-  Notice you can't pick a date in the past."*
+  Notice you can't pick a date in the past, and there's an 'Other (Call for a
+  quote)' option for anything not on the menu."*
 - A green success message confirms it saved.
 
-**6. Contact form (`/contact`)**
+**4. Contact form (`/contact`)**
 - Fill it out and submit.
 - *"Customer messages are stored so the owner can follow up later."*
 
-**7. Admin dashboard (`/fadak-admin/login`)** — the highlight
+**5. Admin dashboard (`/fadak-admin/login`)** — the highlight
 - Log in with `admin` / `admin123`.
 - *"This is the private owner dashboard. At the top are live stats — how many
-  appointments are pending, available inventory value, unread messages."*
+  appointments are pending, how many services are offered, and unread messages."*
 - Show the **appointment you just booked** appearing in the list.
 - Change its status from "Pending" to "Confirmed" — *"the owner manages the
   workflow right here."*
 - Scroll to **Customer Inquiries** and show the message you just sent.
-- Go to **Manage Vehicles** → **Add New Vehicle**, add one, then show it now
-  appears on the public inventory page. Edit or delete it to show full control.
+- Go to **Manage Services** → **Add New Service** (or edit one and change its
+  price), then show it instantly updates on the public Services page. Delete it
+  to show full control.
 
-**8. Wrap-up**
+**6. Wrap-up**
 - *"So the whole system connects: customers interact on the public site, and
   everything flows into a secure admin dashboard the owner uses to run the
-  business."*
+  business — including full control over the services and pricing."*
 
 ---
 
@@ -300,7 +293,7 @@ Be ready for these — they make the project sound professional:
 - **Architecture:** *"It's a Flask web app following the MVC idea — routes in
   `app.py` handle logic, Jinja2 templates handle the display, and SQLite stores
   the data."*
-- **Database:** *"Four main tables — vehicles, customers, appointments, and
+- **Database:** *"Four main tables — services, customers, appointments, and
   inquiries — linked with proper relationships (an appointment belongs to a
   customer)."*
 - **Security (this impresses):**

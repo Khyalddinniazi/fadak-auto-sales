@@ -17,7 +17,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from seed_data import SERVICE_SEED, vehicles_with_images
+from seed_data import SERVICE_SEED
 
 # Base directory for predictable relative paths.
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -57,7 +57,7 @@ ADMIN_PASSWORD_HASH = generate_password_hash(_admin_password)
 # Fadak Auto Sales — business contact (shown site-wide).
 SITE = {
     "name": "Fadak Auto Sales",
-    "tagline": "Premium vehicles & trusted auto service in Tacoma, WA",
+    "tagline": "Trusted auto repair & service in Tacoma, WA",
     "address": "5110 131st Street Ct E, Tacoma, WA 98446",
     "phone": "(253) 777-5796",
     "email": "Autosalesfadak@gmail.com",
@@ -153,20 +153,6 @@ def init_db():
             FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
         );
 
-        CREATE TABLE IF NOT EXISTS vehicles (
-            vehicle_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            year INTEGER NOT NULL,
-            make TEXT NOT NULL,
-            model TEXT NOT NULL,
-            mileage INTEGER NOT NULL,
-            price REAL NOT NULL,
-            condition TEXT NOT NULL,
-            vin TEXT,
-            description TEXT,
-            image_url TEXT,
-            status TEXT NOT NULL DEFAULT 'Available'
-        );
-
         CREATE TABLE IF NOT EXISTS services (
             service_id INTEGER PRIMARY KEY AUTOINCREMENT,
             service_name TEXT NOT NULL UNIQUE,
@@ -193,59 +179,6 @@ def init_db():
             VALUES (?, ?, ?)
             """,
             (service_name, description, estimated_price),
-        )
-
-    # Remove legacy demo VINs so we do not duplicate Toyota/Honda rows after expanding inventory.
-    legacy_vins = (
-        "VIN-TOY-CAMRY%",
-        "VIN-HON-ACCORD%",
-        "VIN-FOR-F150%",
-        "VIN-BMW-3SERIES%",
-        "VIN-TES-MODEL3%",
-        "VIN-NIS-ALTIMA%",
-        "VIN-CHE-SILV%",
-        "VIN-HYU-SONATA%",
-    )
-    for pattern in legacy_vins:
-        cursor.execute("DELETE FROM vehicles WHERE vin LIKE ?", (pattern,))
-
-    # Add vehicles by unique VIN until we have the full demo lot (22 cars).
-    for vehicle in vehicles_with_images():
-        vin = vehicle[6]
-        exists = cursor.execute(
-            "SELECT vehicle_id FROM vehicles WHERE vin = ?", (vin,)
-        ).fetchone()
-        if exists:
-            continue
-        cursor.execute(
-            """
-            INSERT INTO vehicles
-            (year, make, model, mileage, price, condition, vin, description, image_url, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            vehicle,
-        )
-
-    # Refresh broken or placeholder image URLs on existing rows.
-    # We overwrite empty/placeholder values and any stock Unsplash URL (some of
-    # the original photo IDs went dead and now 404). Custom images set by an
-    # admin from a different host are left untouched.
-    for vehicle in vehicles_with_images():
-        vin, image_url = vehicle[6], vehicle[8]
-        cursor.execute(
-            """
-            UPDATE vehicles
-            SET image_url = ?
-            WHERE vin = ?
-              AND image_url IS NOT ?
-              AND (
-                    image_url IS NULL
-                    OR TRIM(image_url) = ''
-                    OR LOWER(image_url) LIKE '%placeholder%'
-                    OR image_url LIKE 'https://images.unsplash.com/%'
-              )
-            """,
-            (image_url, vin, image_url),
         )
 
     db.commit()
@@ -323,75 +256,10 @@ def validate_appointment(form_data):
 @app.route("/")
 def index():
     db = get_db()
-    featured_vehicles = db.execute(
-        "SELECT * FROM vehicles ORDER BY vehicle_id DESC LIMIT 8"
-    ).fetchall()
     services = db.execute(
         "SELECT * FROM services ORDER BY service_name ASC LIMIT 10"
     ).fetchall()
-    return render_template(
-        "index.html", featured_vehicles=featured_vehicles, services=services
-    )
-
-
-@app.route("/inventory")
-def inventory():
-    db = get_db()
-
-    search = request.args.get("search", "").strip()
-    min_price = request.args.get("min_price", "").strip()
-    max_price = request.args.get("max_price", "").strip()
-    year = request.args.get("year", "").strip()
-    condition = request.args.get("condition", "").strip()
-
-    query = "SELECT * FROM vehicles WHERE 1=1"
-    params = []
-
-    if search:
-        query += " AND (make LIKE ? OR model LIKE ?)"
-        params.extend([f"%{search}%", f"%{search}%"])
-    if min_price:
-        query += " AND price >= ?"
-        params.append(parse_float(min_price, 0))
-    if max_price:
-        query += " AND price <= ?"
-        params.append(parse_float(max_price, 9999999))
-    if year:
-        query += " AND year = ?"
-        params.append(parse_int(year, 0))
-    if condition:
-        query += " AND condition = ?"
-        params.append(condition)
-
-    query += " ORDER BY year DESC, make ASC"
-
-    vehicles = db.execute(query, params).fetchall()
-    available_years = db.execute("SELECT DISTINCT year FROM vehicles ORDER BY year DESC").fetchall()
-    conditions = db.execute("SELECT DISTINCT condition FROM vehicles ORDER BY condition ASC").fetchall()
-
-    return render_template(
-        "inventory.html",
-        vehicles=vehicles,
-        available_years=available_years,
-        conditions=conditions,
-        filters={
-            "search": search,
-            "min_price": min_price,
-            "max_price": max_price,
-            "year": year,
-            "condition": condition,
-        },
-    )
-
-
-@app.route("/vehicles/<int:vehicle_id>")
-def vehicle_detail(vehicle_id):
-    db = get_db()
-    vehicle = db.execute("SELECT * FROM vehicles WHERE vehicle_id = ?", (vehicle_id,)).fetchone()
-    if vehicle is None:
-        flash("Vehicle not found.", "danger")
-        return redirect(url_for("inventory"))
-    return render_template("vehicle_detail.html", vehicle=vehicle)
+    return render_template("index.html", services=services)
 
 
 @app.route("/services")
@@ -543,10 +411,10 @@ def admin_dashboard():
         ORDER BY a.appointment_date DESC, a.appointment_time DESC
         """
     ).fetchall()
-    vehicles = db.execute("SELECT * FROM vehicles ORDER BY vehicle_id DESC").fetchall()
     inquiries = db.execute(
         "SELECT * FROM inquiries ORDER BY created_at DESC"
     ).fetchall()
+    services_total = db.execute("SELECT COUNT(*) FROM services").fetchone()[0]
 
     def count_appts(status):
         return sum(1 for a in appointments if a["status"] == status)
@@ -556,12 +424,7 @@ def admin_dashboard():
         "appointments_pending": count_appts("Pending"),
         "appointments_confirmed": count_appts("Confirmed"),
         "appointments_completed": count_appts("Completed"),
-        "vehicles_total": len(vehicles),
-        "vehicles_available": sum(1 for v in vehicles if v["status"] == "Available"),
-        "vehicles_sold": sum(1 for v in vehicles if v["status"] == "Sold"),
-        "inventory_value": sum(
-            v["price"] for v in vehicles if v["status"] == "Available"
-        ),
+        "services_total": services_total,
         "inquiries_total": len(inquiries),
         "inquiries_unread": sum(1 for i in inquiries if not i["is_read"]),
     }
@@ -569,7 +432,6 @@ def admin_dashboard():
     return render_template(
         "admin_dashboard.html",
         appointments=appointments,
-        vehicles=vehicles,
         inquiries=inquiries,
         stats=stats,
     )
@@ -626,129 +488,125 @@ def update_appointment_status(appointment_id):
     return redirect(url_for("admin_dashboard"))
 
 
-@app.route("/fadak-admin/vehicles")
+@app.route("/fadak-admin/services")
 @admin_required
-def admin_vehicles():
+def admin_services():
     db = get_db()
-    vehicles = db.execute("SELECT * FROM vehicles ORDER BY vehicle_id DESC").fetchall()
-    return render_template("admin_vehicles.html", vehicles=vehicles)
+    services = db.execute(
+        "SELECT * FROM services ORDER BY service_name ASC"
+    ).fetchall()
+    return render_template("admin_services.html", services=services)
 
 
-@app.route("/fadak-admin/vehicles/add", methods=["GET", "POST"])
+@app.route("/fadak-admin/services/add", methods=["GET", "POST"])
 @admin_required
-def add_vehicle():
+def add_service():
     if request.method == "POST":
-        return save_vehicle_form()
-    return render_template("admin_vehicle_form.html", vehicle=None, form_action=url_for("add_vehicle"))
-
-
-@app.route("/fadak-admin/vehicles/<int:vehicle_id>/edit", methods=["GET", "POST"])
-@admin_required
-def edit_vehicle(vehicle_id):
-    db = get_db()
-    vehicle = db.execute("SELECT * FROM vehicles WHERE vehicle_id = ?", (vehicle_id,)).fetchone()
-
-    if vehicle is None:
-        flash("Vehicle not found.", "danger")
-        return redirect(url_for("admin_vehicles"))
-
-    if request.method == "POST":
-        return save_vehicle_form(vehicle_id=vehicle_id)
-
+        return save_service_form()
     return render_template(
-        "admin_vehicle_form.html",
-        vehicle=vehicle,
-        form_action=url_for("edit_vehicle", vehicle_id=vehicle_id),
+        "admin_service_form.html", service=None, form_action=url_for("add_service")
     )
 
 
-@app.route("/fadak-admin/vehicles/<int:vehicle_id>/delete", methods=["POST"])
+@app.route("/fadak-admin/services/<int:service_id>/edit", methods=["GET", "POST"])
 @admin_required
-def delete_vehicle(vehicle_id):
+def edit_service(service_id):
     db = get_db()
-    db.execute("DELETE FROM vehicles WHERE vehicle_id = ?", (vehicle_id,))
+    service = db.execute(
+        "SELECT * FROM services WHERE service_id = ?", (service_id,)
+    ).fetchone()
+
+    if service is None:
+        flash("Service not found.", "danger")
+        return redirect(url_for("admin_services"))
+
+    if request.method == "POST":
+        return save_service_form(service_id=service_id)
+
+    return render_template(
+        "admin_service_form.html",
+        service=service,
+        form_action=url_for("edit_service", service_id=service_id),
+    )
+
+
+@app.route("/fadak-admin/services/<int:service_id>/delete", methods=["POST"])
+@admin_required
+def delete_service(service_id):
+    db = get_db()
+    db.execute("DELETE FROM services WHERE service_id = ?", (service_id,))
     db.commit()
 
-    flash("Vehicle removed from inventory.", "info")
-    return redirect(url_for("admin_vehicles"))
+    flash("Service removed.", "info")
+    return redirect(url_for("admin_services"))
 
 
-def save_vehicle_form(vehicle_id=None):
-    """Shared add/edit vehicle handler."""
+def save_service_form(service_id=None):
+    """Shared add/edit service handler."""
     db = get_db()
 
-    year = parse_int(request.form.get("year"), None)
-    make = request.form.get("make", "").strip()
-    model = request.form.get("model", "").strip()
-    mileage = parse_int(request.form.get("mileage"), None)
-    price = parse_float(request.form.get("price"), None)
-    condition = request.form.get("condition", "").strip()
-    vin = request.form.get("vin", "").strip()
+    service_name = request.form.get("service_name", "").strip()
     description = request.form.get("description", "").strip()
-    image_url = request.form.get("image_url", "").strip()
-    status = request.form.get("status", "").strip()
+    price = parse_float(request.form.get("estimated_price"), None)
 
     errors = []
-    if not year:
-        errors.append("Year is required.")
-    if not make:
-        errors.append("Make is required.")
-    if not model:
-        errors.append("Model is required.")
-    if mileage is None:
-        errors.append("Mileage is required.")
-    if price is None:
-        errors.append("Price is required.")
-    if condition not in {"New", "Used", "Certified"}:
-        errors.append("Condition must be New, Used, or Certified.")
-    if status not in {"Available", "Sold"}:
-        errors.append("Status must be Available or Sold.")
+    if not service_name:
+        errors.append("Service name is required.")
+    if not description:
+        errors.append("Description is required.")
+    if price is None or price < 0:
+        errors.append("A valid price is required (use 0 for free/included).")
+
+    # Guard against duplicate service names (the column is UNIQUE).
+    if service_name:
+        duplicate = db.execute(
+            "SELECT service_id FROM services WHERE service_name = ? AND service_id IS NOT ?",
+            (service_name, service_id),
+        ).fetchone()
+        if duplicate:
+            errors.append("A service with that name already exists.")
 
     if errors:
         for error in errors:
             flash(error, "danger")
 
-        # Re-render form with entered values if validation fails.
-        vehicle_data = {
-            "vehicle_id": vehicle_id,
-            "year": request.form.get("year", ""),
-            "make": make,
-            "model": model,
-            "mileage": request.form.get("mileage", ""),
-            "price": request.form.get("price", ""),
-            "condition": condition,
-            "vin": vin,
+        service_data = {
+            "service_id": service_id,
+            "service_name": service_name,
             "description": description,
-            "image_url": image_url,
-            "status": status,
+            "estimated_price": request.form.get("estimated_price", ""),
         }
-        action = url_for("add_vehicle") if vehicle_id is None else url_for("edit_vehicle", vehicle_id=vehicle_id)
-        return render_template("admin_vehicle_form.html", vehicle=vehicle_data, form_action=action)
+        action = (
+            url_for("add_service")
+            if service_id is None
+            else url_for("edit_service", service_id=service_id)
+        )
+        return render_template(
+            "admin_service_form.html", service=service_data, form_action=action
+        )
 
-    if vehicle_id is None:
+    if service_id is None:
         db.execute(
             """
-            INSERT INTO vehicles
-            (year, make, model, mileage, price, condition, vin, description, image_url, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO services (service_name, description, estimated_price)
+            VALUES (?, ?, ?)
             """,
-            (year, make, model, mileage, price, condition, vin, description, image_url, status),
+            (service_name, description, price),
         )
-        flash("Vehicle added successfully.", "success")
+        flash("Service added successfully.", "success")
     else:
         db.execute(
             """
-            UPDATE vehicles
-            SET year = ?, make = ?, model = ?, mileage = ?, price = ?,
-                condition = ?, vin = ?, description = ?, image_url = ?, status = ?
-            WHERE vehicle_id = ?
+            UPDATE services
+            SET service_name = ?, description = ?, estimated_price = ?
+            WHERE service_id = ?
             """,
-            (year, make, model, mileage, price, condition, vin, description, image_url, status, vehicle_id),
+            (service_name, description, price, service_id),
         )
-        flash("Vehicle updated successfully.", "success")
+        flash("Service updated successfully.", "success")
 
     db.commit()
-    return redirect(url_for("admin_vehicles"))
+    return redirect(url_for("admin_services"))
 
 
 # ---------- Error handlers ----------

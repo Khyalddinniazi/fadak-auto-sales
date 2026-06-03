@@ -16,5 +16,15 @@
       </article>
     {% endfor %}
   </div>
+
+  <div class="quote-callout">
+    <h3>Don't see what you need?</h3>
+    <p>We handle many more repairs than listed here. Book an appointment and choose
+       <strong>"Other (Call for a quote)"</strong>, or give us a call and we'll get you a fair price.</p>
+    <div class="hero-buttons" style="justify-content:center;">
+      <a class="btn btn-primary" href="{{ url_for('appointment') }}">Request a Quote</a>
+      <a class="btn btn-outline" href="tel:+12537775796">Call {{ site.phone }}</a>
+    </div>
+  </div>
 </section>
 {% endblock %}

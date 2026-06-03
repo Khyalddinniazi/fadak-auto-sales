@@ -29,6 +29,7 @@
         {% for service in service_names %}
           <option value="{{ service['service_name'] }}">{{ service['service_name'] }}</option>
         {% endfor %}
+        <option value="Other (Call for a quote)">Other (Call for a quote)</option>
       </select>
     </label>
     <label>Preferred Date*
@@ -38,7 +39,7 @@
       <input type="time" name="preferred_time" required>
     </label>
     <label class="full-width">Additional Notes
-      <textarea name="notes" rows="4" placeholder="Tell us any specific concerns"></textarea>
+      <textarea name="notes" rows="4" placeholder="Tell us any specific concerns. If you chose 'Other', please describe what you need so we can give you a quote."></textarea>
     </label>
     <button class="btn btn-primary" type="submit">Submit Appointment</button>
   </form>
