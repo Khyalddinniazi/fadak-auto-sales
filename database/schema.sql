@@ -1,5 +1,5 @@
--- SQLite schema and seed data for AutoCare Dealership & Service Center.
--- This file mirrors the schema created by app.py init_db().
+-- SQLite schema for Fadak Auto Sales — Service Center.
+-- This mirrors the schema created automatically by init_db() in app.py.
 
 PRAGMA foreign_keys = ON;
 
@@ -25,23 +25,18 @@ CREATE TABLE IF NOT EXISTS appointments (
   FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS vehicles (
-  vehicle_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  year INTEGER NOT NULL,
-  make TEXT NOT NULL,
-  model TEXT NOT NULL,
-  mileage INTEGER NOT NULL,
-  price REAL NOT NULL,
-  condition TEXT NOT NULL,
-  vin TEXT,
-  description TEXT,
-  image_url TEXT,
-  status TEXT NOT NULL DEFAULT 'Available'
-);
-
 CREATE TABLE IF NOT EXISTS services (
   service_id INTEGER PRIMARY KEY AUTOINCREMENT,
   service_name TEXT NOT NULL UNIQUE,
   description TEXT NOT NULL,
   estimated_price REAL NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS inquiries (
+  inquiry_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  is_read INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL
 );

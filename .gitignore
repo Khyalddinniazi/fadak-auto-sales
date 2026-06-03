@@ -23,3 +23,6 @@ database/*.sqlite3
 .idea/
 .vscode/
 *.swp
+
+# Internal handover doc (kept local, not part of the public portfolio repo)
+PRESENTATION_GUIDE.md
