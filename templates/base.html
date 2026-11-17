@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}{{ site.name }}{% endblock %}</title>
+  <!-- Apply the saved (or OS-preferred) theme before CSS loads to avoid a flash of the wrong theme. -->
+  <script>(function(){try{var t=localStorage.getItem("theme");if(t!=="dark"&&t!=="light"){t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -13,13 +15,18 @@
   <header>
     <nav class="navbar container">
       <a class="brand" href="{{ url_for('index') }}"><span>Fadak</span> Auto Sales</a>
-      <button id="menuToggle" class="menu-toggle" type="button" aria-label="Open menu">Menu</button>
       <ul id="navLinks" class="nav-links">
         <li><a href="{{ url_for('index') }}">Home</a></li>
         <li><a href="{{ url_for('services') }}">Services</a></li>
         <li><a href="{{ url_for('appointment') }}">Book Service</a></li>
         <li><a href="{{ url_for('contact') }}">Contact</a></li>
       </ul>
+      <div class="nav-actions">
+        <button id="menuToggle" class="menu-toggle" type="button" aria-label="Open menu">Menu</button>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Toggle dark mode">
+          <span class="icon-moon" aria-hidden="true">🌙</span><span class="icon-sun" aria-hidden="true">☀️</span>
+        </button>
+      </div>
     </nav>
   </header>
 

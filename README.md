@@ -34,6 +34,7 @@ It has two sides:
 - Online appointment booking with full validation (no past-date bookings)
 - **"Other — Call for a quote"** option for services not on the menu
 - Contact form that saves inquiries for the owner to follow up on
+- Dark/light mode toggle (remembers your choice)
 
 ### Admin dashboard (secure)
 - Live business stats: appointments by status, services offered, unread inquiries

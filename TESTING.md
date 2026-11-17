@@ -59,3 +59,11 @@
 13. **Responsive design**
     - Step: Resize browser to mobile width (<= 760px).
     - Expected: Navbar collapses to menu button; cards/forms remain readable and usable.
+
+14. **Dark/light mode toggle**
+    - Step: Click the 🌙/☀️ button in the top-right of the navbar, reload the page, then visit other pages (including admin and 404 pages).
+    - Expected: Colours switch between light and dark (body, cards, forms, tables, flash messages, status badges stay readable); the choice is remembered after reload and across pages with no flash of the other theme.
+    - Step: Use Tab to reach the toggle and press Enter/Space; at mobile width (<= 760px) use both the Menu button and the toggle.
+    - Expected: Visible focus ring; `aria-label` reads "Switch to light mode"/"Switch to dark mode"; the menu dropdown still opens and lines up.
+    - Step: Clear `localStorage` and set the OS/browser to dark mode, then reload.
+    - Expected: Site starts in dark mode (follows `prefers-color-scheme` until a choice is made).

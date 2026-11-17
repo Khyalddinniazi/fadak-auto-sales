@@ -8,6 +8,36 @@ if (menuToggle && navLinks) {
   });
 }
 
+// Dark/light theme toggle (persisted in localStorage).
+const themeToggle = document.getElementById("themeToggle");
+
+if (themeToggle) {
+  const root = document.documentElement;
+
+  const syncThemeButton = (theme) => {
+    const isDark = theme === "dark";
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+  };
+
+  const applyTheme = (theme) => {
+    root.dataset.theme = theme;
+    syncThemeButton(theme);
+    try {
+      localStorage.setItem("theme", theme);
+    } catch (e) {
+      // Storage may be unavailable (e.g. private mode); the theme still applies for this page.
+    }
+  };
+
+  // The inline <head> script already set data-theme; just sync the button state.
+  syncThemeButton(root.dataset.theme === "dark" ? "dark" : "light");
+
+  themeToggle.addEventListener("click", () => {
+    applyTheme(root.dataset.theme === "dark" ? "light" : "dark");
+  });
+}
+
 // Highlight current page in navbar.
 const currentPath = window.location.pathname;
 document.querySelectorAll(".nav-links a").forEach((link) => {
